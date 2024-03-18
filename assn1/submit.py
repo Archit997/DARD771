@@ -1,5 +1,6 @@
 import numpy as np
-import sklearn
+import sklearn.linear_model as lm
+import sklearn.svm as svm
 from scipy.linalg import khatri_rao
 
 # You are allowed to import any submodules of sklearn that learn linear models e.g. sklearn.svm etc
@@ -22,6 +23,13 @@ def my_fit( X_train, y_train ):
 ################################
 #  Non Editable Region Ending  #
 ################################
+	X_train = my_map(X_train)
+	model = lm.LogisticRegression()
+	#model = svm.LinearSVC(loss='hinge')
+	model.fit(X_train,y_train)
+	w = model.coef_.flatten()
+	b = model.intercept_
+
 
 	# Use this method to train your model using training CRPs
 	# X_train has 32 columns containing the challeenge bits
@@ -39,8 +47,15 @@ def my_map( X ):
 ################################
 #  Non Editable Region Ending  #
 ################################
+	X = 1-2*X
+	X_rev = X[:,::-1]
+	X_prod = np.cumprod(X_rev,axis=1)
+	X = X_prod[:,::-1]
 
-	# Use this method to create features.
-	# It is likely that my_fit will internally call my_map to create features for train points
-	
+	n_samples, n_features = X.shape
+	outer_product = np.einsum('ij,ik->ijk', X, X)
+	upper_triangle_indices = np.triu_indices(n_features,k=1)
+	features = outer_product[:, upper_triangle_indices[0], upper_triangle_indices[1]]
+	feat = np.concatenate((X,features),axis=1)
+
 	return feat
