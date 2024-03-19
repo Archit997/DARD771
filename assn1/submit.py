@@ -24,7 +24,7 @@ def my_fit( X_train, y_train ):
 #  Non Editable Region Ending  #
 ################################
 	X_train = my_map(X_train)
-	model = lm.LogisticRegression()
+	model = lm.LogisticRegression(penalty=None)
 	#model = svm.LinearSVC(loss='hinge')
 	model.fit(X_train,y_train)
 	w = model.coef_.flatten()
